@@ -20,6 +20,17 @@ local MENU_ANIMATION_TIME = 0.3
 local BUTTON_ANIMATION_TIME = 0.2
 local STAND_ATTACK_COOLDOWN = 1.5
 
+-- Opera GX Theme Colors
+local THEME = {
+    background = Color3.fromRGB(36, 36, 36),
+    titleBar = Color3.fromRGB(25, 25, 25),
+    accent = Color3.fromRGB(255, 55, 55),
+    buttonIdle = Color3.fromRGB(45, 45, 45),
+    buttonHover = Color3.fromRGB(55, 55, 55),
+    textPrimary = Color3.fromRGB(255, 255, 255),
+    textSecondary = Color3.fromRGB(180, 180, 180)
+}
+
 -- Tween configurations
 local tweenInfo = TweenInfo.new(
     MENU_ANIMATION_TIME,
@@ -35,125 +46,130 @@ local buttonTweenInfo = TweenInfo.new(
 
 -- Create main GUI
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BrowserMenu"
+screenGui.Name = "OperaGXMenu"
 screenGui.Parent = game.CoreGui
 
 -- Main browser window
 local browserFrame = Instance.new("Frame")
-browserFrame.Size = UDim2.new(0, 800, 0, 600)
-browserFrame.Position = UDim2.new(0.5, -400, 0.5, -300)
-browserFrame.BackgroundColor3 = Color3.fromRGB(245, 246, 247)
+browserFrame.Size = UDim2.new(0, 600, 0, 400)
+browserFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+browserFrame.BackgroundColor3 = THEME.background
 browserFrame.BorderSizePixel = 0
 browserFrame.Visible = false
 browserFrame.Active = true
 browserFrame.Draggable = true
 browserFrame.Parent = screenGui
 
--- Top bar (like Chrome's title bar)
+-- Add rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = browserFrame
+
+-- Top bar (like Opera GX's title bar)
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 40)
+topBar.Size = UDim2.new(1, 0, 0, 30)
 topBar.Position = UDim2.new(0, 0, 0, 0)
-topBar.BackgroundColor3 = Color3.fromRGB(53, 54, 58)
+topBar.BackgroundColor3 = THEME.titleBar
 topBar.BorderSizePixel = 0
 topBar.Parent = browserFrame
 
--- Browser controls bar
-local controlsBar = Instance.new("Frame")
-controlsBar.Size = UDim2.new(1, 0, 0, 40)
-controlsBar.Position = UDim2.new(0, 0, 0, 40)
-controlsBar.BackgroundColor3 = Color3.fromRGB(242, 242, 242)
-controlsBar.BorderSizePixel = 0
-controlsBar.Parent = browserFrame
+local topBarCorner = corner:Clone()
+topBarCorner.Parent = topBar
 
--- URL bar
-local urlBar = Instance.new("TextBox")
-urlBar.Size = UDim2.new(0.7, 0, 0, 30)
-urlBar.Position = UDim2.new(0.15, 0, 0, 5)
-urlBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-urlBar.Text = "konnzzz browser menu"
-urlBar.TextColor3 = Color3.fromRGB(0, 0, 0)
-urlBar.TextScaled = true
-urlBar.BorderSizePixel = 0
-urlBar.Parent = controlsBar
+-- Title text
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.5, 0, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "konnzzz menu"
+title.TextColor3 = THEME.accent
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = topBar
 
 -- Content area
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, 0, 1, -80)
-contentArea.Position = UDim2.new(0, 0, 0, 80)
-contentArea.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+contentArea.Size = UDim2.new(1, -20, 1, -40)
+contentArea.Position = UDim2.new(0, 10, 0, 35)
+contentArea.BackgroundColor3 = THEME.background
 contentArea.BorderSizePixel = 0
 contentArea.Parent = browserFrame
 
--- Enhanced button creation with animations
+-- Create modern button with Opera GX style
 local function createModernButton(name, yOffset, callback)
     local buttonContainer = Instance.new("Frame")
-    buttonContainer.Size = UDim2.new(0.9, 0, 0, 50)
-    buttonContainer.Position = UDim2.new(0.05, 0, 0, yOffset)
-    buttonContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    buttonContainer.BackgroundTransparency = 0
+    buttonContainer.Size = UDim2.new(1, 0, 0, 40)
+    buttonContainer.Position = UDim2.new(0, 0, 0, yOffset)
+    buttonContainer.BackgroundColor3 = THEME.buttonIdle
     buttonContainer.BorderSizePixel = 0
     buttonContainer.Parent = contentArea
 
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 6)
+    buttonCorner.Parent = buttonContainer
+
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, -60, 1, 0)
+    button.Size = UDim2.new(1, -50, 1, 0)
     button.Position = UDim2.new(0, 0, 0, 0)
-    button.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+    button.BackgroundTransparency = 1
     button.Text = name
-    button.TextColor3 = Color3.fromRGB(50, 50, 50)
-    button.TextSize = 18
-    button.Font = Enum.Font.SourceSansSemibold
-    button.BorderSizePixel = 0
+    button.TextColor3 = THEME.textPrimary
+    button.TextSize = 14
+    button.Font = Enum.Font.GothamSemibold
+    button.TextXAlignment = Enum.TextXAlignment.Left
     button.Parent = buttonContainer
-    
-    -- Add hover and click animations
-    button.MouseEnter:Connect(function()
-        local hoverTween = TweenService:Create(button, buttonTweenInfo, {
-            BackgroundColor3 = Color3.fromRGB(230, 230, 230),
-            TextColor3 = Color3.fromRGB(0, 0, 0)
-        })
-        hoverTween:Play()
-    end)
-    
-    button.MouseLeave:Connect(function()
-        local leaveTween = TweenService:Create(button, buttonTweenInfo, {
-            BackgroundColor3 = Color3.fromRGB(240, 240, 240),
-            TextColor3 = Color3.fromRGB(50, 50, 50)
-        })
-        leaveTween:Play()
-    end)
+
+    -- Add padding to text
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.Parent = button
 
     local status = Instance.new("Frame")
-    status.Size = UDim2.new(0, 50, 1, 0)
-    status.Position = UDim2.new(1, 0, 0, 0)
+    status.Size = UDim2.new(0, 40, 0, 40)
+    status.Position = UDim2.new(1, -45, 0, 0)
     status.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
     status.BorderSizePixel = 0
     status.Parent = buttonContainer
 
+    local statusCorner = Instance.new("UICorner")
+    statusCorner.CornerRadius = UDim.new(0, 6)
+    statusCorner.Parent = status
+
+    -- Hover and click effects
+    buttonContainer.MouseEnter:Connect(function()
+        TweenService:Create(buttonContainer, buttonTweenInfo, {
+            BackgroundColor3 = THEME.buttonHover
+        }):Play()
+    end)
+
+    buttonContainer.MouseLeave:Connect(function()
+        TweenService:Create(buttonContainer, buttonTweenInfo, {
+            BackgroundColor3 = THEME.buttonIdle
+        }):Play()
+    end)
+
     button.MouseButton1Click:Connect(function()
-        -- Click animation
-        local clickTween = TweenService:Create(button, TweenInfo.new(0.1), {
-            Size = UDim2.new(0.98, -60, 0.95, 0)
-        })
-        clickTween:Play()
+        -- Click effect
+        TweenService:Create(buttonContainer, TweenInfo.new(0.1), {
+            Size = UDim2.new(0.98, 0, 0, 40)
+        }):Play()
         
         callback()
         
-        -- Reset size after click
         wait(0.1)
-        local resetTween = TweenService:Create(button, TweenInfo.new(0.1), {
-            Size = UDim2.new(1, -60, 1, 0)
-        })
-        resetTween:Play()
-        
+        TweenService:Create(buttonContainer, TweenInfo.new(0.1), {
+            Size = UDim2.new(1, 0, 0, 40)
+        }):Play()
+
         -- Status color transition
-        local newColor = status.BackgroundColor3 == Color3.fromRGB(239, 68, 68) 
-            and Color3.fromRGB(34, 197, 94) 
+        local newColor = status.BackgroundColor3 == Color3.fromRGB(239, 68, 68)
+            and Color3.fromRGB(34, 197, 94)
             or Color3.fromRGB(239, 68, 68)
-        
-        local statusTween = TweenService:Create(status, buttonTweenInfo, {
+
+        TweenService:Create(status, buttonTweenInfo, {
             BackgroundColor3 = newColor
-        })
-        statusTween:Play()
+        }):Play()
     end)
 
     return buttonContainer
@@ -272,7 +288,11 @@ local function createStand()
     torso.Name = "Torso"
     torso.Transparency = 0.2
     torso.CanCollide = false
+    torso.Anchored = false
     torso.Parent = stand
+    
+    -- Set torso as PrimaryPart
+    stand.PrimaryPart = torso
     
     local head = Instance.new("Part")
     head.Size = Vector3.new(1, 1, 1)
@@ -313,7 +333,7 @@ local function createStand()
     leftArmWeld.Part1 = leftArm
     leftArmWeld.C0 = CFrame.new(-1.5, 0, 0)
     leftArmWeld.Parent = torso
-    
+
     return stand
 end
 
@@ -405,37 +425,50 @@ function toggleStand()
     end
 end
 
+-- Function to teleport other players to you
+function teleportPlayersToMe()
+    local character = LocalPlayer.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local myPos = character.HumanoidRootPart.CFrame
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character:SetPrimaryPartCFrame(myPos * CFrame.new(0, 3, 0))
+        end
+    end
+end
+
 -- Create buttons with proper spacing
-local yOffset = 20
-local spacing = 60
+local yOffset = 10
+local spacing = 45
 
 createModernButton("ESP", yOffset, esp)
 createModernButton("Invisibility", yOffset + spacing, invisibility)
 createModernButton("Speed", yOffset + spacing * 2, speed)
 createModernButton("God Mode", yOffset + spacing * 3, godMode)
 createModernButton("No Clip", yOffset + spacing * 4, noClip)
-createModernButton("Teleport to Random Player", yOffset + spacing * 5, teleportToRandomPlayer)
-createModernButton("Toggle Stand", yOffset + spacing * 6, toggleStand)
+createModernButton("Teleport Random to Me", yOffset + spacing * 5, teleportPlayersToMe)
+createModernButton("Teleport to Random", yOffset + spacing * 6, teleportToRandomPlayer)
+createModernButton("Toggle Stand", yOffset + spacing * 7, toggleStand)
 
--- Enhanced key bindings with stand attack
+-- Enhanced key bindings
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
     if input.KeyCode == Enum.KeyCode.P then
         menuEnabled = not menuEnabled
         
-        -- Animate menu appearance/disappearance
         if menuEnabled then
-            browserFrame.Position = UDim2.new(0.5, -400, 0, -600)
+            browserFrame.Position = UDim2.new(0.5, -300, 0, -400)
             browserFrame.Visible = true
             
-            local appearTween = TweenService:Create(browserFrame, tweenInfo, {
-                Position = UDim2.new(0.5, -400, 0.5, -300)
-            })
-            appearTween:Play()
+            TweenService:Create(browserFrame, tweenInfo, {
+                Position = UDim2.new(0.5, -300, 0.5, -200)
+            }):Play()
         else
             local disappearTween = TweenService:Create(browserFrame, tweenInfo, {
-                Position = UDim2.new(0.5, -400, 1, 100)
+                Position = UDim2.new(0.5, -300, 1, 100)
             })
             disappearTween:Play()
             
@@ -450,4 +483,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("Enhanced Browser-Style Menu with Stand Loaded")
+print("Opera GX Style Menu Loaded - Press P to toggle")
